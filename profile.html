@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="profileApp">
+
+<head>
+<meta charset="UTF-8">
+<title>AngularJS Profile Page</title>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f4f6f8;
+}
+
+.card{
+max-width:400px;
+width:90%;
+margin:40px auto;
+padding:20px;
+background:white;
+border-radius:8px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.view-mode{
+background:#f9fbff;
+padding:10px;
+border-radius:6px;
+}
+
+.edit-mode{
+background:#fff7f7;
+padding:10px;
+border-radius:6px;
+border:1px solid #eee;
+}
+
+.error{
+color:red;
+font-size:12px;
+}
+
+.success{
+background:#d4edda;
+color:#155724;
+padding:8px;
+border-radius:4px;
+margin-bottom:10px;
+font-weight:bold;
+}
+
+input,textarea,select{
+width:100%;
+margin-bottom:10px;
+padding:8px;
+border:1px solid #ccc;
+border-radius:4px;
+}
+
+input.ng-invalid.ng-touched,
+select.ng-invalid.ng-touched,
+textarea.ng-invalid.ng-touched{
+border:2px solid red;
+}
+
+button{
+padding:8px 14px;
+margin-right:5px;
+cursor:pointer;
+border:none;
+background:#007BFF;
+color:white;
+border-radius:4px;
+}
+
+button:hover{
+background:#0056b3;
+}
+
+button:disabled{
+background:#999;
+cursor:not-allowed;
+}
+
+@media (max-width:600px){
+
+.card{
+width:95%;
+margin:20px auto;
+}
+
+button{
+width:100%;
+margin-top:5px;
+}
+
+}
+
+</style>
+
+</head>
+
+<body ng-controller="ProfileController">
+
+<div class="card">
+
+<h3>User Profile</h3>
+
+<!-- SUCCESS MESSAGE (NOW VISIBLE) -->
+
+<div class="success" ng-show="successMsg">
+Profile updated successfully!
+</div>
+
+
+<!-- VIEW MODE -->
+
+<div class="view-mode" ng-show="!editMode">
+
+<p><b>Name:</b> {{profile.name}}</p>
+<p><b>Email:</b> {{profile.email}}</p>
+<p><b>Mobile:</b> {{profile.mobile}}</p>
+<p><b>Gender:</b> {{profile.gender}}</p>
+<p><b>Address:</b> {{profile.address}}</p>
+
+<button ng-click="editProfile()">Edit Profile</button>
+
+</div>
+
+
+<!-- EDIT MODE -->
+
+<form class="edit-mode" name="profileForm" ng-show="editMode" novalidate>
+
+<label for="name">Full Name</label>
+
+<input
+type="text"
+id="name"
+name="name"
+ng-model="profile.name"
+placeholder="Full Name"
+ng-pattern="/^[a-zA-Z\s]+$/"
+required>
+
+<span class="error"
+ng-show="profileForm.$submitted && profileForm.name.$error.required">
+Name is required
+</span>
+
+<span class="error"
+ng-show="profileForm.name.$error.pattern">
+Only letters and spaces allowed
+</span>
+
+
+<label for="email">Email Address</label>
+
+<input
+type="email"
+id="email"
+name="email"
+ng-model="profile.email"
+placeholder="Email"
+required>
+
+<span class="error"
+ng-show="profileForm.email.$error.email">
+Invalid email format
+</span>
+
+
+<label for="mobile">Mobile Number</label>
+
+<input
+type="text"
+id="mobile"
+name="mobile"
+ng-model="profile.mobile"
+placeholder="Mobile Number"
+ng-pattern="/^[0-9]{10}$/"
+required>
+
+<span class="error"
+ng-show="profileForm.mobile.$error.pattern">
+Mobile must be exactly 10 digits
+</span>
+
+
+<label for="gender">Gender</label>
+
+<select
+id="gender"
+name="gender"
+ng-model="profile.gender"
+required>
+
+<option value="">Select Gender</option>
+<option>Male</option>
+<option>Female</option>
+
+</select>
+
+
+<label for="address">Address / Bio</label>
+
+<textarea
+id="address"
+name="address"
+ng-model="profile.address"
+placeholder="Address"></textarea>
+
+
+<button
+ng-click="updateProfile(profileForm)"
+ng-disabled="profileForm.$invalid">
+Update
+</button>
+
+<button type="button" ng-click="cancelEdit()">Cancel</button>
+
+</form>
+
+</div>
+
+
+<script>
+
+var app = angular.module("profileApp", []);
+
+app.controller("ProfileController", function($scope,$timeout){
+
+$scope.originalProfile = {
+name:"Sankpal Tejas Vijay",
+email:"tejas@gmail.com",
+mobile:"9876543210",
+gender:"Male",
+address:"Pune, Maharashtra"
+};
+
+$scope.profile = angular.copy($scope.originalProfile);
+
+$scope.editMode = false;
+$scope.successMsg = false;
+
+$scope.editProfile = function(){
+$scope.editMode = true;
+$scope.successMsg = false;
+};
+
+$scope.updateProfile = function(form){
+
+form.$setSubmitted();
+
+if(form.$valid){
+
+$scope.originalProfile = angular.copy($scope.profile);
+
+$scope.editMode = false;
+
+$scope.successMsg = true;
+
+/* Auto-hide success message */
+
+$timeout(function(){
+$scope.successMsg = false;
+},3000);
+
+}
+
+};
+
+$scope.cancelEdit = function(){
+
+$scope.profile = angular.copy($scope.originalProfile);
+
+$scope.editMode = false;
+
+};
+
+});
+
+</script>
+
+</body>
+</html>
